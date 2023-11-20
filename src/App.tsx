@@ -20,9 +20,18 @@ const initialItems: Item[] = [
 ];
 
 const Example: React.FC = () => {
-  const [firstColumn, setFirstColumn] = useState<Item[]>(initialItems);
+  const [countStep, setCountStep] = useState<number>(0);
+  const [firstColumn, setFirstColumn] = useState<Item[]>([]);
   const [secondColumn, setSecondColumn] = useState<Item[]>([]);
   const [thirdColumn, setThirdColumn] = useState<Item[]>([]);
+  const [firstSolution, setFirstSolution] = useState<Item[]>([]);
+  const [secondSolution, setSecondSolution] = useState<Item[]>([]);
+  const [thirdSolution, setThirdSolution] = useState<Item[]>([]);
+  const allSolution: ItemsArray[] = [
+    { items: firstSolution, setItems: setFirstSolution },
+    { items: secondSolution, setItems: setSecondSolution },
+    { items: thirdSolution, setItems: setThirdSolution },
+  ];
   const allColumns: ItemsArray[] = [
     { items: firstColumn, setItems: setFirstColumn },
     { items: secondColumn, setItems: setSecondColumn },
@@ -30,11 +39,39 @@ const Example: React.FC = () => {
   ];
 
   useEffect(() => {
+    resetColumns();
+
+    randomlyAssign(setFirstColumn, setSecondColumn, setThirdColumn);
+    randomlyAssign(setFirstSolution, setSecondSolution, setThirdSolution);
+  }, []);
+
+  useEffect(() => {
+    let win: boolean = true;
+
+    allSolution.forEach((column, columnIndex) => {
+      column.items.forEach((item, itemIndex) => {
+        if (
+          !allColumns[columnIndex] ||
+          !allColumns[columnIndex].items[itemIndex] ||
+          allColumns[columnIndex].items[itemIndex].id !== item.id
+        ) {
+          win = false;
+          console.log('not yet');
+          return;
+        }
+      });
+    });
+
+    win ? console.log('you won') : '';
+  }, [allColumns]);
+
+  const randomlyAssign = (
+    setFirst: React.Dispatch<React.SetStateAction<Item[]>>,
+    setSecond: React.Dispatch<React.SetStateAction<Item[]>>,
+    setThird: React.Dispatch<React.SetStateAction<Item[]>>
+  ) => {
     const shuffledItems = [...initialItems];
     shuffleArray(shuffledItems);
-
-    
-    resetColumns();
 
     // Distribute items randomly among the columns
     shuffledItems.forEach((item) => {
@@ -42,19 +79,19 @@ const Example: React.FC = () => {
       const columnIndex = Math.floor(Math.random() * 3);
       switch (columnIndex) {
         case 0:
-          setFirstColumn((prev) => [...prev, item]);
+          setFirst((prev) => [...prev, item]);
           break;
         case 1:
-          setSecondColumn((prev) => [...prev, item]);
+          setSecond((prev) => [...prev, item]);
           break;
         case 2:
-          setThirdColumn((prev) => [...prev, item]);
+          setThird((prev) => [...prev, item]);
           break;
         default:
           break;
       }
     });
-  }, []);
+  }
 
   // Shuffle the array
   const shuffleArray = (array: Item[]) => {
@@ -67,6 +104,7 @@ const Example: React.FC = () => {
 
   // Reset all columns
   const resetColumns = () => {
+    setCountStep(0);
     setFirstColumn([]);
     setSecondColumn([]);
     setThirdColumn([]);
@@ -93,56 +131,100 @@ const Example: React.FC = () => {
 
     sourceColumn.setItems(prevItems => [...prevItems.slice(0, -1)]);
     allColumns[destId].setItems(prevItems => [...prevItems, dropedItem]);
+    setCountStep((prev) => prev + 1);
   };
 
   return (
-    <div>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className='flex justify-center gap-1 w-full absolute bottom-0'>
+    <div className='flex flex-col gap-5 justify-around'>
+      <div>
+        {countStep}
+      </div>
+
+      <div>
+        <div className='flex justify-center gap-1 w-full'>
           {[0, 1, 2].map((columnIndex) => (
-            <Droppable key={columnIndex} droppableId={columnIndex.toString()} direction="vertical">
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  className=''
-                  style={{
-                    background: snapshot.isDraggingOver ? 'lightblue' : 'lightgrey',
-                    padding: 16,
-                    width: 200,
-                    minHeight: 200,
-                    display: 'flex',
-                    flexDirection: 'column-reverse', // Stack items from the bottom
-                  }}
-                >
-                  {allColumns[columnIndex].items
-                    .map((item, index) => (
-                      <Draggable key={item.id} draggableId={item.id} index={index} isDragDisabled={isAtTop(index, columnIndex)}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={{
-                              userSelect: 'none',
-                              padding: 16,
-                              margin: '0 0 8px 0',
-                              backgroundColor: snapshot.isDragging ? '#263B4A' : '#456C86',
-                              color: 'white',
-                              ...provided.draggableProps.style,
-                            }}
-                          >
-                            {item.content}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+            <div
+              key={columnIndex}
+              className=''
+              style={{
+                background: 'lightblue',
+                padding: 16,
+                width: 200,
+                height: 360,
+                display: 'flex',
+                flexDirection: 'column-reverse', // Stack items from the bottom
+              }}
+            >
+              {allSolution[columnIndex].items
+                .map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      userSelect: 'none',
+                      padding: 16,
+                      margin: '0 0 8px 0',
+                      backgroundColor: '#263B4A',
+                      color: 'white',
+                      zIndex: 3,
+                    }}
+                  >
+                    {item.content}
+                  </div>
+                ))}
+            </div>
           ))}
         </div>
-      </DragDropContext>
+      </div>
+
+      <div>
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className='flex justify-center gap-1 w-full'>
+            {[0, 1, 2].map((columnIndex) => (
+              <Droppable key={columnIndex} droppableId={columnIndex.toString()} direction="vertical">
+                {(provided, snapshot) => (
+                  <div
+                    key={columnIndex}
+                    ref={provided.innerRef}
+                    className=''
+                    style={{
+                      background: snapshot.isDraggingOver ? 'lightblue' : 'lightgrey',
+                      padding: 16,
+                      width: 200,
+                      height: 360,
+                      display: 'flex',
+                      flexDirection: 'column-reverse', // Stack items from the bottom
+                    }}
+                  >
+                    {allColumns[columnIndex].items
+                      .map((item, index) => (
+                        <Draggable key={item.id} draggableId={item.id} index={index} isDragDisabled={isAtTop(index, columnIndex)}>
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={{
+                                userSelect: 'none',
+                                padding: 16,
+                                margin: '0 0 8px 0',
+                                backgroundColor: snapshot.isDragging ? '#263B4A' : '#456C86',
+                                color: 'white',
+                                ...provided.draggableProps.style,
+                              }}
+                            >
+                              {item.content}
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            ))}
+          </div>
+        </DragDropContext>
+      </div>
     </div>
   );
 };
