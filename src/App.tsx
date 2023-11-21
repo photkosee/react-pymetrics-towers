@@ -1,91 +1,89 @@
 import React, { useEffect, useState } from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { 
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult
+} from 'react-beautiful-dnd';
 
-interface Item {
-  id: string;
-  content: string;
-}
+import { Block, Tower } from './models/models';
 
-interface ItemsArray {
-  items: Item[];
-  setItems: React.Dispatch<React.SetStateAction<Item[]>>;
-}
-
-const initialItems: Item[] = [
-  { id: 'item-1', content: 'Item 1' },
-  { id: 'item-2', content: 'Item 2' },
-  { id: 'item-3', content: 'Item 3' },
-  { id: 'item-4', content: 'Item 4' },
-  { id: 'item-5', content: 'Item 5' },
+const initialBlocks: Block[] = [
+  { id: 0, color: 'bg-gradient-to-r from-yellow-400 to-amber-500' },
+  { id: 1, color: 'bg-gradient-to-r from-lime-400 to-emerald-500' },
+  { id: 2, color: 'bg-gradient-to-r from-orange-500 to-red-600' },
+  { id: 3, color: 'bg-gradient-to-r from-cyan-400 to-blue-500' },
+  { id: 4, color: 'bg-gradient-to-r from-pink-500 to-rose-600' },
 ];
 
 const Example: React.FC = () => {
   const [countStep, setCountStep] = useState<number>(0);
-  const [firstColumn, setFirstColumn] = useState<Item[]>([]);
-  const [secondColumn, setSecondColumn] = useState<Item[]>([]);
-  const [thirdColumn, setThirdColumn] = useState<Item[]>([]);
-  const [firstSolution, setFirstSolution] = useState<Item[]>([]);
-  const [secondSolution, setSecondSolution] = useState<Item[]>([]);
-  const [thirdSolution, setThirdSolution] = useState<Item[]>([]);
-  const allSolution: ItemsArray[] = [
-    { items: firstSolution, setItems: setFirstSolution },
-    { items: secondSolution, setItems: setSecondSolution },
-    { items: thirdSolution, setItems: setThirdSolution },
+  const [firstPattern, setFirstPattern] = useState<Block[]>([]);
+  const [secondPattern, setSecondPattern] = useState<Block[]>([]);
+  const [thirdPattern, setThirdPattern] = useState<Block[]>([]);
+  const [firstTower, setFirstTower] = useState<Block[]>([]);
+  const [secondTower, setSecondTower] = useState<Block[]>([]);
+  const [thirdTower, setThirdTower] = useState<Block[]>([]);
+  const patterns: Tower[] = [
+    { blocks: firstPattern, setBlocks: setFirstPattern },
+    { blocks: secondPattern, setBlocks: setSecondPattern },
+    { blocks: thirdPattern, setBlocks: setThirdPattern },
   ];
-  const allColumns: ItemsArray[] = [
-    { items: firstColumn, setItems: setFirstColumn },
-    { items: secondColumn, setItems: setSecondColumn },
-    { items: thirdColumn, setItems: setThirdColumn },
+  const towers: Tower[] = [
+    { blocks: firstTower, setBlocks: setFirstTower },
+    { blocks: secondTower, setBlocks: setSecondTower },
+    { blocks: thirdTower, setBlocks: setThirdTower },
   ];
 
   useEffect(() => {
     resetColumns();
 
-    randomlyAssign(setFirstColumn, setSecondColumn, setThirdColumn);
-    randomlyAssign(setFirstSolution, setSecondSolution, setThirdSolution);
+    randomlyAssign(setFirstPattern, setSecondPattern, setThirdPattern);
+    randomlyAssign(setFirstTower, setSecondTower, setThirdTower);
   }, []);
 
   useEffect(() => {
-    let win: boolean = true;
+    isMatching() ? console.log('you won') : '';
+  }, [firstTower, secondTower, thirdTower]);
 
-    allSolution.forEach((column, columnIndex) => {
-      column.items.forEach((item, itemIndex) => {
+  const isMatching = () => {
+    patterns.forEach((tower, towerIndex) => {
+      tower.blocks.forEach((block, blockIndex) => {
         if (
-          !allColumns[columnIndex] ||
-          !allColumns[columnIndex].items[itemIndex] ||
-          allColumns[columnIndex].items[itemIndex].id !== item.id
+          !towers[towerIndex] ||
+          !towers[towerIndex].blocks[blockIndex] ||
+          towers[towerIndex].blocks[blockIndex].id !== block.id
         ) {
-          win = false;
           console.log('not yet');
-          return;
+          return false;
         }
       });
     });
 
-    win ? console.log('you won') : '';
-  }, [allColumns]);
+    return true;
+  }
 
   const randomlyAssign = (
-    setFirst: React.Dispatch<React.SetStateAction<Item[]>>,
-    setSecond: React.Dispatch<React.SetStateAction<Item[]>>,
-    setThird: React.Dispatch<React.SetStateAction<Item[]>>
+    setFirst: React.Dispatch<React.SetStateAction<Block[]>>,
+    setSecond: React.Dispatch<React.SetStateAction<Block[]>>,
+    setThird: React.Dispatch<React.SetStateAction<Block[]>>
   ) => {
-    const shuffledItems = [...initialItems];
-    shuffleArray(shuffledItems);
+    const shuffledBlocks = [...initialBlocks];
+    shuffleArray(shuffledBlocks);
 
     // Distribute items randomly among the columns
-    shuffledItems.forEach((item) => {
+    shuffledBlocks.forEach((block) => {
       // Randomly distribute among three columns
       const columnIndex = Math.floor(Math.random() * 3);
       switch (columnIndex) {
         case 0:
-          setFirst((prev) => [...prev, item]);
+          setFirst((prev) => [...prev, block]);
           break;
         case 1:
-          setSecond((prev) => [...prev, item]);
+          setSecond((prev) => [...prev, block]);
           break;
         case 2:
-          setThird((prev) => [...prev, item]);
+          setThird((prev) => [...prev, block]);
           break;
         default:
           break;
@@ -94,7 +92,7 @@ const Example: React.FC = () => {
   }
 
   // Shuffle the array
-  const shuffleArray = (array: Item[]) => {
+  const shuffleArray = (array: Block[]) => {
     // Fisher-Yates shuffle algorithm
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -105,14 +103,17 @@ const Example: React.FC = () => {
   // Reset all columns
   const resetColumns = () => {
     setCountStep(0);
-    setFirstColumn([]);
-    setSecondColumn([]);
-    setThirdColumn([]);
-  }
+    patterns.forEach((tower) => tower.setBlocks([]));
+    towers.forEach((tower) => tower.setBlocks([]));
+  };
 
   // Whether the element with the index is positioning at the top of the column
-  const isAtTop = (index: number, columnIndex: number) => {
-    return index + 1 !== allColumns[columnIndex].items.length;
+  const isAtTop = (blockIndex: number, towerIndex: number) => {
+    return blockIndex + 1 !== towers[towerIndex].blocks.length;
+  };
+
+  const isDroppable = (towerIndex: number, blockIndex: number) => {
+    return towers[towerIndex].blocks.length <= blockIndex;
   };
 
   // Only allows to drop at the top most position of the other columns
@@ -124,13 +125,16 @@ const Example: React.FC = () => {
       return;
     }
 
-    const sourceId = parseInt(result.source.droppableId);
-    const destId = parseInt(result.destination.droppableId);
-    const sourceColumn = allColumns[sourceId];
-    const dropedItem = sourceColumn.items[sourceColumn.items.length - 1];
+    const sourceId = parseInt(result.source.droppableId.substring(0, 1));
+    const destId = parseInt(result.destination.droppableId.substring(0, 1));
 
-    sourceColumn.setItems(prevItems => [...prevItems.slice(0, -1)]);
-    allColumns[destId].setItems(prevItems => [...prevItems, dropedItem]);
+    if (sourceId === destId) return;
+
+    const sourceTower = towers[sourceId];
+    const draggingBlock = sourceTower.blocks[sourceTower.blocks.length - 1];
+
+    sourceTower.setBlocks(prevItems => [...prevItems.slice(0, -1)]);
+    towers[destId].setBlocks(prevItems => [...prevItems, draggingBlock]);
     setCountStep((prev) => prev + 1);
   };
 
@@ -141,35 +145,32 @@ const Example: React.FC = () => {
       </div>
 
       <div>
-        <div className='flex justify-center gap-1 w-full'>
-          {[0, 1, 2].map((columnIndex) => (
-            <div
-              key={columnIndex}
-              className=''
-              style={{
-                background: 'lightblue',
-                padding: 16,
-                width: 200,
-                height: 360,
-                display: 'flex',
-                flexDirection: 'column-reverse', // Stack items from the bottom
-              }}
+        <div className='flex justify-center gap-3 w-full'>
+          {[0, 1, 2].map((towerIndex) => (
+            <div className='
+              w-24 h-full flex flex-col-reverse
+              justify-center items-center gap-[0.1rem]
+              '
+              key={towerIndex}
             >
-              {allSolution[columnIndex].items
-                .map((item, index) => (
-                  <div
+              <div className='w-24 h-3 rounded-xl border-2 bg-neutral-100' />
+
+              {patterns[towerIndex].blocks
+                .map((block) => (
+                  <div className={`
+                    w-16 h-14 rounded-xl ${block.color}
+                    `}
+                    key={block.id}
+                  />
+                ))}
+
+              {new Array(5 - patterns[towerIndex].blocks.length).fill(0)
+                .map((_, index) => (
+                  <div className='
+                    w-16 h-14 rounded-xl border-2 invisible
+                    '
                     key={index}
-                    style={{
-                      userSelect: 'none',
-                      padding: 16,
-                      margin: '0 0 8px 0',
-                      backgroundColor: '#263B4A',
-                      color: 'white',
-                      zIndex: 3,
-                    }}
-                  >
-                    {item.content}
-                  </div>
+                  />
                 ))}
             </div>
           ))}
@@ -178,50 +179,56 @@ const Example: React.FC = () => {
 
       <div>
         <DragDropContext onDragEnd={onDragEnd}>
-          <div className='flex justify-center gap-1 w-full'>
-            {[0, 1, 2].map((columnIndex) => (
-              <Droppable key={columnIndex} droppableId={columnIndex.toString()} direction="vertical">
-                {(provided, snapshot) => (
-                  <div
-                    key={columnIndex}
-                    ref={provided.innerRef}
-                    className=''
-                    style={{
-                      background: snapshot.isDraggingOver ? 'lightblue' : 'lightgrey',
-                      padding: 16,
-                      width: 200,
-                      height: 360,
-                      display: 'flex',
-                      flexDirection: 'column-reverse', // Stack items from the bottom
-                    }}
-                  >
-                    {allColumns[columnIndex].items
-                      .map((item, index) => (
-                        <Draggable key={item.id} draggableId={item.id} index={index} isDragDisabled={isAtTop(index, columnIndex)}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={{
-                                userSelect: 'none',
-                                padding: 16,
-                                margin: '0 0 8px 0',
-                                backgroundColor: snapshot.isDragging ? '#263B4A' : '#456C86',
-                                color: 'white',
-                                ...provided.draggableProps.style,
-                              }}
-                            >
-                              {item.content}
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            ))}
+          <div className='flex justify-center gap-3 w-full'>
+            {[0, 1, 2].map((towerIndex) => (
+              <div className='
+                w-24 h-full flex flex-col-reverse
+                justify-center items-center gap-[0.1rem]
+                '
+                key={towerIndex}
+              >
+                <div className='w-24 h-3 rounded-xl border-2 bg-neutral-100' />
+
+                {[0, 1, 2, 3, 4].map((rowIndex) => (
+                  <Droppable key={rowIndex} droppableId={towerIndex.toString() + rowIndex.toString()} direction="vertical" isDropDisabled={!isDroppable(towerIndex, rowIndex)}>
+                    {(provided, snapshot) => (
+                      <div
+                        key={rowIndex}
+                        ref={provided.innerRef}
+                        className={`
+                        w-16 h-14 flex justify-center items-center
+                        ${snapshot.isDraggingOver && 'transform scale-110 rounded-xl border-4 border-dashed border-slate-400/10 bg-neutral-100'}
+                        `}
+                      >
+                        {towers[towerIndex].blocks
+                          .map((block, blockIndex) => {
+                            if (blockIndex === rowIndex) {
+                              return (
+                                <Draggable key={block.id} draggableId={block.id.toString()} index={blockIndex} isDragDisabled={isAtTop(blockIndex, towerIndex)}>
+                                  {(provided) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className={`
+                                      w-16 h-14 rounded-xl ${block.color}
+                                      ${isAtTop(blockIndex, towerIndex) ? '' : 'hover:scale-105 ease-in-out'}
+                                      `}
+                                    />
+                                  )}
+                                </Draggable>
+                              )
+                            } else {
+                              return null;
+                            }
+                          })}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                  ))}
+              </div>
+              ))}
           </div>
         </DragDropContext>
       </div>
