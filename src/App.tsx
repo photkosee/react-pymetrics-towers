@@ -36,17 +36,16 @@ const Example: React.FC = () => {
   ];
 
   useEffect(() => {
-    resetColumns();
-
-    randomlyAssign(setFirstPattern, setSecondPattern, setThirdPattern);
-    randomlyAssign(setFirstTower, setSecondTower, setThirdTower);
+    reset();
   }, []);
 
   useEffect(() => {
-    isMatching() ? console.log('you won') : '';
-  }, [firstTower, secondTower, thirdTower]);
+    isMatching();
+  }, [towers]);
 
   const isMatching = () => {
+    let matching: boolean = true;
+
     patterns.forEach((tower, towerIndex) => {
       tower.blocks.forEach((block, blockIndex) => {
         if (
@@ -54,14 +53,16 @@ const Example: React.FC = () => {
           !towers[towerIndex].blocks[blockIndex] ||
           towers[towerIndex].blocks[blockIndex].id !== block.id
         ) {
-          console.log('not yet');
-          return false;
+          matching = false;
         }
       });
     });
 
-    return true;
-  }
+    if (matching) {
+      alert(`won ${countStep}`);
+      reset();
+    }
+  };
 
   const randomlyAssign = (
     setFirst: React.Dispatch<React.SetStateAction<Block[]>>,
@@ -89,7 +90,7 @@ const Example: React.FC = () => {
           break;
       }
     });
-  }
+  };
 
   // Shuffle the array
   const shuffleArray = (array: Block[]) => {
@@ -101,10 +102,12 @@ const Example: React.FC = () => {
   };
 
   // Reset all columns
-  const resetColumns = () => {
+  const reset = () => {
     setCountStep(0);
     patterns.forEach((tower) => tower.setBlocks([]));
     towers.forEach((tower) => tower.setBlocks([]));
+    randomlyAssign(setFirstPattern, setSecondPattern, setThirdPattern);
+    randomlyAssign(setFirstTower, setSecondTower, setThirdTower);
   };
 
   // Whether the element with the index is positioning at the top of the column
@@ -139,7 +142,7 @@ const Example: React.FC = () => {
   };
 
   return (
-    <div className='flex flex-col gap-5 justify-around'>
+    <div className='max-w-screen-xl max-h-screen-xl flex flex-col gap-5 justify-around'>
       <div>
         {countStep}
       </div>
@@ -190,21 +193,33 @@ const Example: React.FC = () => {
                 <div className='w-24 h-3 rounded-xl border-2 bg-neutral-100' />
 
                 {[0, 1, 2, 3, 4].map((rowIndex) => (
-                  <Droppable key={rowIndex} droppableId={towerIndex.toString() + rowIndex.toString()} direction="vertical" isDropDisabled={!isDroppable(towerIndex, rowIndex)}>
+                  <Droppable
+                    key={rowIndex}
+                    droppableId={towerIndex.toString() + rowIndex.toString()}
+                    direction="vertical"
+                    isDropDisabled={!isDroppable(towerIndex, rowIndex)}
+                  >
                     {(provided, snapshot) => (
                       <div
                         key={rowIndex}
                         ref={provided.innerRef}
                         className={`
-                        w-16 h-14 flex justify-center items-center
-                        ${snapshot.isDraggingOver && 'transform scale-110 rounded-xl border-4 border-dashed border-slate-400/10 bg-neutral-100'}
+                        w-16 h-14 flex justify-center items-center rounded-xl border-dashed
+                        ${snapshot.isDraggingOver &&
+                          'transform scale-110 border-4 border-slate-400/10 bg-neutral-100'
+                        }
                         `}
                       >
                         {towers[towerIndex].blocks
                           .map((block, blockIndex) => {
                             if (blockIndex === rowIndex) {
                               return (
-                                <Draggable key={block.id} draggableId={block.id.toString()} index={blockIndex} isDragDisabled={isAtTop(blockIndex, towerIndex)}>
+                                <Draggable
+                                  key={block.id}
+                                  draggableId={block.id.toString()}
+                                  index={blockIndex}
+                                  isDragDisabled={isAtTop(blockIndex, towerIndex)}
+                                >
                                   {(provided) => (
                                     <div
                                       ref={provided.innerRef}
@@ -212,7 +227,9 @@ const Example: React.FC = () => {
                                       {...provided.dragHandleProps}
                                       className={`
                                       w-16 h-14 rounded-xl ${block.color}
-                                      ${isAtTop(blockIndex, towerIndex) ? '' : 'hover:scale-105 ease-in-out'}
+                                      ${isAtTop(blockIndex, towerIndex) ? '' :
+                                        'hover:scale-105 ease-in-out'
+                                      }
                                       `}
                                     />
                                   )}
