@@ -143,7 +143,7 @@ const Example: React.FC = () => {
 
   return (
     <div className='
-      max-w-screen-3xl max-h-screen-3xl flex flex-col gap-5 justify-around items-center p-5
+      w-screen h-screen flex flex-col gap-5 justify-around items-center p-5
       '
     >
       <div>
