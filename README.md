@@ -1,30 +1,5 @@
-# React + TypeScript + Vite
+# Pymetrics Towers Game
+> A game to make the towers match the target formation using as few moves and finishing as fast as possible. Visit the site [here](https://photkosee.github.io/react-pymetrics-towers/)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Background
+Driven by curiosity about the mechanics of drag-and-drop functionality, I embarked on a journey to explore new libraries that could elevate user experiences (with React Beautiful DnD). This exploration coincided with my plans to construct a [personalized Pymetrics Games site](https://github.com/photkosee/next-pymetrics-games), where I envisioned incorporating a drag-and-drop feature, particularly in a tower game, to enhance the overall user engagement and interaction.
