@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import { Info } from "lucide-react";
 import { RotateCcw } from "lucide-react";
 import { 
   DragDropContext,
@@ -9,8 +10,9 @@ import {
 } from 'react-beautiful-dnd';
 
 import { Block, Tower } from './models/models';
-import StartModal from './components/StartModal';
 import HowToModal from './components/HowToModal';
+import WinModal from './components/WinModal';
+import OverModal from './components/OverModal';
 
 const initialBlocks: Block[] = [
   { id: 0, color: 'bg-gradient-to-r from-yellow-400 to-amber-500' },
@@ -22,6 +24,9 @@ const initialBlocks: Block[] = [
 
 const Home: React.FC = () => {
   const isMounted = useRef(false);
+  const [open, setOpen] = useState<boolean>(true);
+  const [openWin, setOpenWin] = useState<boolean>(false);
+  const [over, setOver] = useState<boolean>(false);
   const [date, setDate] = useState<number>(Date.now());
   const [time, setTime] = useState<number>(0);
   const [countStep, setCountStep] = useState<number>(0);
@@ -92,8 +97,7 @@ const Home: React.FC = () => {
     });
 
     if (matching) {
-      alert(`won ${countStep}`);
-      reset();
+      setOpenWin(true);
     }
   };
 
@@ -180,16 +184,19 @@ const Home: React.FC = () => {
     <main className='bg-slate-800 h-full w-full'
     >
       <div className='
-        min-h-screen flex flex-col w-screen
+        min-h-screen flex flex-col w-full
         justify-around items-center p-5
         '
       >
-        <HowToModal />
-        <StartModal />
-
-        <div role="button" onClick={() => reset()} className="absolute top-5 right-20 rounded-full bg-slate-200 p-2">
-          <RotateCcw />
-        </div>
+        <HowToModal open={open} setOpen={setOpen} reset={reset} />
+        <OverModal open={over} setOpen={setOver} reset={reset} />
+        <WinModal
+          open={openWin}
+          setOpen={setOpenWin}
+          reset={reset}
+          time={time}
+          steps={countStep}
+        />
 
         <div className='flex flex-col items-center gap-7'>
           <div className='flex justify-between gap-2'>
@@ -209,7 +216,8 @@ const Home: React.FC = () => {
                     {patterns[towerIndex].blocks
                       .map((block) => (
                         <div className={`
-                          w-8 h-8 md:w-12 md:h-10 rounded-lg md:rounded-xl ${block.color}
+                          w-8 h-8 md:w-12 md:h-10 rounded-lg md:rounded-xl
+                          ${block.color}
                           `}
                           key={block.id}
                         />
@@ -218,7 +226,8 @@ const Home: React.FC = () => {
                     {new Array(5 - patterns[towerIndex].blocks.length).fill(0)
                       .map((_, index) => (
                         <div className='
-                          w-8 h-8 md:w-12 md:h-10 rounded-lg md:rounded-xl border-2 invisible
+                          w-8 h-8 md:w-12 md:h-10 rounded-lg md:rounded-xl
+                          border-2 invisible
                           '
                           key={index}
                         />
@@ -229,19 +238,39 @@ const Home: React.FC = () => {
             </div>
 
             <div className='w-[100px] h-full flex flex-col gap-2 self-end'>
+              <div className='flex gap-2 justify-center'>
+                <div className="rounded-full bg-slate-200 p-2"
+                  role="button"
+                  onClick={() => {
+                    setOpen(true);
+                    reset();
+                  }}
+                >
+                  <Info />
+                </div>
+
+                <div className="rounded-full bg-slate-200 p-2"
+                  role="button"
+                  onClick={() => reset()}
+                >
+                  <RotateCcw />
+                </div>
+              </div>
+
               <div className='
                 border-2 border-neutral-300 rounded-lg bg-white w-full h-[80px]
                 flex flex-col py-2 justify-around items-center
                 '
               >
-                <h2>Timer</h2>
+                <h2 className='font-semibold'>Timer</h2>
                 <p>{time}</p>  
               </div>
-              <div className='border-2 border-neutral-300 rounded-lg bg-white w-full h-[80px]
+              <div className='
+                border-2 border-neutral-300 rounded-lg bg-white w-full h-[80px]
                 flex flex-col py-2 justify-around items-center
                 '
               >
-                <h2>Steps</h2>
+                <h2 className='font-semibold'>Steps</h2>
                 <p>{countStep}</p>
               </div>
             </div>
@@ -271,9 +300,10 @@ const Home: React.FC = () => {
                             key={rowIndex}
                             ref={provided.innerRef}
                             className={`
-                              w-10 h-9 md:w-16 md:h-14 flex justify-center items-center rounded-xl border-dashed
+                              w-10 h-9 md:w-16 md:h-14 flex justify-center items-center
+                              rounded-xl border-dashed
                               ${snapshot.isDraggingOver &&
-                                'transform scale-110 border-4 border-slate-400/10 bg-neutral-100'
+                                'transform scale-110 border-4 border-slate-400/10bg-neutral-100'
                               }
                             `}
                           >
@@ -293,10 +323,10 @@ const Home: React.FC = () => {
                                           {...provided.draggableProps}
                                           {...provided.dragHandleProps}
                                           className={`
-                                          w-10 h-9 rounded-lg md:w-16 md:h-14 md:rounded-xl ${block.color}
-                                          ${isAtTop(blockIndex, towerIndex) ? '' :
-                                            'hover:scale-105 ease-in-out'
-                                          }
+                                            w-10 h-9 rounded-lg md:w-16 md:h-14 md:rounded-xl ${block.color}
+                                            ${isAtTop(blockIndex, towerIndex) ? '' :
+                                              'hover:scale-105 ease-in-out'
+                                            }
                                           `}
                                         />
                                       )}

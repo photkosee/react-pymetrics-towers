@@ -9,18 +9,21 @@ import {
   Button,
 } from "@nextui-org/react";
 
-interface HowToModalProps {
+interface WinModalProps {
   open: boolean;
+  steps: number;
+  time: number;
   setOpen: Dispatch<SetStateAction<boolean>>;
   reset: () => void;
 }
 
-const HowToModal: FC<HowToModalProps> = ({
+const WinModal: FC<WinModalProps> = ({
   open,
+  steps,
+  time,
   setOpen,
   reset,
 }) => {
-
   return (
     <>
       <Modal isOpen={open}
@@ -33,20 +36,11 @@ const HowToModal: FC<HowToModalProps> = ({
         <ModalContent>
           <>
             <ModalHeader className="flex flex-col gap-1">
-              How to play
+              You won!
             </ModalHeader>
             <ModalBody>
               <p> 
-                Your goal is to match all the blocks at the bottom of the
-                screen with the pattern of the blocks at the top of the screen.
-              </p>
-              <p> 
-                To do this, simply drag and drop the blocks in the correct order.
-                Note that you can only move the top most block on each column.
-              </p>
-              <p> 
-                Try to do this as fast as you can while minimizing the number
-                of steps you move a block. Have fun!
+                You spent {time} seconds with {steps} steps.
               </p>
             </ModalBody>
             <ModalFooter>
@@ -66,4 +60,4 @@ const HowToModal: FC<HowToModalProps> = ({
   );
 }
 
-export default HowToModal;
+export default WinModal;
