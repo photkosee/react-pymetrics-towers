@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
+import { RotateCcw } from "lucide-react";
 import { 
   DragDropContext,
   Droppable,
@@ -7,6 +9,8 @@ import {
 } from 'react-beautiful-dnd';
 
 import { Block, Tower } from './models/models';
+import StartModal from './components/StartModal';
+import HowToModal from './components/HowToModal';
 
 const initialBlocks: Block[] = [
   { id: 0, color: 'bg-gradient-to-r from-yellow-400 to-amber-500' },
@@ -17,6 +21,8 @@ const initialBlocks: Block[] = [
 ];
 
 const Home: React.FC = () => {
+  const isMounted = useRef(false);
+  const [time, setTime] = useState<number>(0);
   const [countStep, setCountStep] = useState<number>(0);
   const [firstPattern, setFirstPattern] = useState<Block[]>([]);
   const [secondPattern, setSecondPattern] = useState<Block[]>([]);
@@ -40,7 +46,11 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    isMatching();
+    if (isMounted.current) {
+      isMatching();
+    } else {
+      isMounted.current = true;
+    }
   }, [towers]);
 
   const isMatching = () => {
@@ -142,115 +152,145 @@ const Home: React.FC = () => {
   };
 
   return (
-    <main className='
-      h-screen flex flex-col gap-5 w-screen overflow-x-hidden
-      justify-around items-center p-5
-      '
+    <main className='bg-slate-800 h-full w-full'
     >
-      <div className='fixed my-auto mx-auto flex flex-col items-center gap-10'>
-        <div>
-          Number of steps: {countStep}
+      <div className='
+        min-h-screen flex flex-col w-screen
+        justify-around items-center p-5
+        '
+      >
+        <HowToModal />
+        <StartModal />
+
+        <div role="button" onClick={() => reset()} className="absolute top-5 right-20 rounded-full bg-slate-200 p-2">
+          <RotateCcw />
         </div>
 
-        <div className='max-w-[250px] border-2 border-neutral-300 rounded-lg px-3 md:px-5 pb-1 pt-3'>
-          <div className='flex justify-center gap-1'>
-            {[0, 1, 2].map((towerIndex) => (
-              <div className='
-                w-10 md:w-14 h-full flex flex-col-reverse
-                justify-center items-center gap-[0.1rem]
-                '
-                key={towerIndex}
-              >
-                {patterns[towerIndex].blocks
-                  .map((block) => (
-                    <div className={`
-                    w-10 h-8 md:w-14 md:h-12 rounded-lg md:rounded-xl ${block.color}
-                      `}
-                      key={block.id}
-                    />
-                  ))}
+        <div className='flex flex-col items-center gap-7'>
+          <div className='flex justify-between gap-2'>
+            <div className='
+              max-w-[180px] border-2 border-neutral-300 rounded-lg px-3 md:px-5
+              pb-1 pt-3 bg-white
+              '
+            >
+              <div className='flex justify-center gap-1'>
+                {[0, 1, 2].map((towerIndex) => (
+                  <div className='
+                    w-8 md:w-12 h-full flex flex-col-reverse
+                    justify-center items-center gap-[0.1rem]
+                    '
+                    key={towerIndex}
+                  >
+                    {patterns[towerIndex].blocks
+                      .map((block) => (
+                        <div className={`
+                          w-8 h-8 md:w-12 md:h-10 rounded-lg md:rounded-xl ${block.color}
+                          `}
+                          key={block.id}
+                        />
+                      ))}
 
-                {new Array(5 - patterns[towerIndex].blocks.length).fill(0)
-                  .map((_, index) => (
-                    <div className='
-                      w-10 h-8 md:w-14 md:h-12 rounded-lg md:rounded-xl border-2 invisible
-                      '
-                      key={index}
-                    />
+                    {new Array(5 - patterns[towerIndex].blocks.length).fill(0)
+                      .map((_, index) => (
+                        <div className='
+                          w-8 h-8 md:w-12 md:h-10 rounded-lg md:rounded-xl border-2 invisible
+                          '
+                          key={index}
+                        />
+                      ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className='w-[100px] h-full flex flex-col gap-2 self-end'>
+              <div className='
+                border-2 border-neutral-300 rounded-lg bg-white w-full h-[80px]
+                flex flex-col py-2 justify-around items-center
+                '
+              >
+                <h2>Timer</h2>
+                <p>{countStep}</p>  
+              </div>
+              <div className='border-2 border-neutral-300 rounded-lg bg-white w-full h-[80px]
+                flex flex-col py-2 justify-around items-center
+                '
+              >
+                <h2>Steps</h2>
+                <p>{countStep}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className='max-w-[320px] bg-white rounded-lg overflow-hidden pt-2 px-1 pb-1'>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <div className='flex justify-center gap-2 md:gap-3 max-w-[320px]'>
+                {[0, 1, 2].map((towerIndex) => (
+                  <div className='
+                    w-16 md:w-24 h-full flex flex-col-reverse
+                    justify-center items-center gap-[0.1rem]
+                    '
+                    key={towerIndex}
+                  >
+                    <div className='w-14 md:w-24 h-2 md:h-3 rounded-xl border-2 bg-neutral-100' />
+
+                    {[0, 1, 2, 3, 4].map((rowIndex) => (
+                      <Droppable
+                        key={rowIndex}
+                        droppableId={towerIndex.toString() + rowIndex.toString()}
+                        direction="vertical"
+                        isDropDisabled={!isDroppable(towerIndex, rowIndex)}
+                      >
+                        {(provided, snapshot) => (
+                          <div
+                            key={rowIndex}
+                            ref={provided.innerRef}
+                            className={`
+                              w-10 h-9 md:w-16 md:h-14 flex justify-center items-center rounded-xl border-dashed
+                              ${snapshot.isDraggingOver &&
+                                'transform scale-110 border-4 border-slate-400/10 bg-neutral-100'
+                              }
+                            `}
+                          >
+                            {towers[towerIndex].blocks
+                              .map((block, blockIndex) => {
+                                if (blockIndex === rowIndex) {
+                                  return (
+                                    <Draggable
+                                      key={block.id}
+                                      draggableId={block.id.toString()}
+                                      index={blockIndex}
+                                      isDragDisabled={isAtTop(blockIndex, towerIndex)}
+                                    >
+                                      {(provided) => (
+                                        <div
+                                          ref={provided.innerRef}
+                                          {...provided.draggableProps}
+                                          {...provided.dragHandleProps}
+                                          className={`
+                                          w-10 h-9 rounded-lg md:w-16 md:h-14 md:rounded-xl ${block.color}
+                                          ${isAtTop(blockIndex, towerIndex) ? '' :
+                                            'hover:scale-105 ease-in-out'
+                                          }
+                                          `}
+                                        />
+                                      )}
+                                    </Draggable>
+                                  )
+                                } else {
+                                  return null;
+                                }
+                              })}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                      ))}
+                  </div>
                   ))}
               </div>
-            ))}
+            </DragDropContext>
           </div>
-        </div>
-
-        <div className='w-[320px]'>
-          <DragDropContext onDragEnd={onDragEnd}>
-            <div className='flex justify-center gap-2 md:gap-3 w-[320px]'>
-              {[0, 1, 2].map((towerIndex) => (
-                <div className='
-                  w-20 md:w-24 h-full flex flex-col-reverse
-                  justify-center items-center gap-[0.1rem]
-                  '
-                  key={towerIndex}
-                >
-                  <div className='w-20 md:w-24 h-3 rounded-xl border-2 bg-neutral-100' />
-
-                  {[0, 1, 2, 3, 4].map((rowIndex) => (
-                    <Droppable
-                      key={rowIndex}
-                      droppableId={towerIndex.toString() + rowIndex.toString()}
-                      direction="vertical"
-                      isDropDisabled={!isDroppable(towerIndex, rowIndex)}
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          key={rowIndex}
-                          ref={provided.innerRef}
-                          className={`
-                            w-14 h-12 md:w-16 md:h-14 flex justify-center items-center rounded-xl border-dashed
-                            ${snapshot.isDraggingOver &&
-                              'transform scale-110 border-4 border-slate-400/10 bg-neutral-100'
-                            }
-                          `}
-                        >
-                          {towers[towerIndex].blocks
-                            .map((block, blockIndex) => {
-                              if (blockIndex === rowIndex) {
-                                return (
-                                  <Draggable
-                                    key={block.id}
-                                    draggableId={block.id.toString()}
-                                    index={blockIndex}
-                                    isDragDisabled={isAtTop(blockIndex, towerIndex)}
-                                  >
-                                    {(provided) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        className={`
-                                        w-14 h-12 md:w-16 md:h-14 rounded-xl ${block.color}
-                                        ${isAtTop(blockIndex, towerIndex) ? '' :
-                                          'hover:scale-105 ease-in-out'
-                                        }
-                                        `}
-                                      />
-                                    )}
-                                  </Draggable>
-                                )
-                              } else {
-                                return null;
-                              }
-                            })}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                    ))}
-                </div>
-                ))}
-            </div>
-          </DragDropContext>
         </div>
       </div>
     </main>
