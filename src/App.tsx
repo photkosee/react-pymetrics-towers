@@ -189,8 +189,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <main className='bg-slate-800 h-full w-full'
-    >
+    <main className='bg-slate-800 h-full w-full'>
       <div className='
         min-h-screen flex flex-col w-full
         justify-around items-center p-5
@@ -251,7 +250,7 @@ const Home: React.FC = () => {
                   role="button"
                   onClick={() => {
                     setOpen(true);
-                    reset();
+                    setIsCounting(false);
                   }}
                 >
                   <Info />
