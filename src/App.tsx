@@ -29,6 +29,7 @@ const Home: React.FC = () => {
   const [over, setOver] = useState<boolean>(false);
   const [date, setDate] = useState<number>(Date.now());
   const [time, setTime] = useState<number>(0);
+  const [isCounting, setIsCounting] = useState<boolean>(false);
   const [countStep, setCountStep] = useState<number>(0);
   const [firstPattern, setFirstPattern] = useState<Block[]>([]);
   const [secondPattern, setSecondPattern] = useState<Block[]>([]);
@@ -52,10 +53,14 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => getTime(), 1000);
+    const interval = setInterval(() => {
+      if (isCounting) {
+        getTime();
+      }
+    }, 1000);
 
     return () => clearInterval(interval);
-  }, [date]);
+  }, [date, isCounting]);
 
   useEffect(() => {
     if (isMounted.current) {
@@ -68,7 +73,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (isMounted.current) {
       if (time > 59) {
-        alert('timeout')
+        setOver(true);
       }
     } else {
       isMounted.current = true;
@@ -97,6 +102,7 @@ const Home: React.FC = () => {
     });
 
     if (matching) {
+      setIsCounting(false);
       setOpenWin(true);
     }
   };
@@ -147,6 +153,7 @@ const Home: React.FC = () => {
     randomlyAssign(setFirstTower, setSecondTower, setThirdTower);
     setTime(0);
     setDate(Date.now());
+    setIsCounting(true);
   };
 
   // Whether the element with the index is positioning at the top of the column
