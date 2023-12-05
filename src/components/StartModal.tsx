@@ -1,3 +1,5 @@
+import { FC } from "react";
+
 import { Info } from "lucide-react";
 import {
   Modal,
@@ -9,7 +11,13 @@ import {
   useDisclosure
 } from "@nextui-org/react";
 
-const StartModal = () => {
+interface StartModalProps {
+  reset: () => void;
+}
+
+const StartModal: FC<StartModalProps> = ({
+  reset
+}) => {
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
   return (
@@ -17,7 +25,7 @@ const StartModal = () => {
       <div role="button" onClick={onOpen} className="absolute top-5 right-5 rounded-full bg-slate-200 p-2">
         <Info />
       </div>
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} isDismissable={false}>
+      <Modal isOpen={isOpen} onOpenChange={() => {onOpenChange; reset()}} isDismissable={false}>
         <ModalContent>
           {(onClose) => (
             <>
@@ -35,7 +43,7 @@ const StartModal = () => {
                 </p>
               </ModalBody>
               <ModalFooter>
-                <Button color="primary" onPress={onClose}>
+                <Button color="primary" onPress={() => {onClose(); reset();}}>
                   Ready
                 </Button>
               </ModalFooter>

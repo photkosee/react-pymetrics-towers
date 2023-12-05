@@ -22,6 +22,7 @@ const initialBlocks: Block[] = [
 
 const Home: React.FC = () => {
   const isMounted = useRef(false);
+  const [date, setDate] = useState<number>(Date.now());
   const [time, setTime] = useState<number>(0);
   const [countStep, setCountStep] = useState<number>(0);
   const [firstPattern, setFirstPattern] = useState<Block[]>([]);
@@ -46,12 +47,34 @@ const Home: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    const interval = setInterval(() => getTime(), 1000);
+
+    return () => clearInterval(interval);
+  }, [date]);
+
+  useEffect(() => {
     if (isMounted.current) {
       isMatching();
     } else {
       isMounted.current = true;
     }
   }, [towers]);
+
+  useEffect(() => {
+    if (isMounted.current) {
+      if (time > 59) {
+        alert('timeout')
+      }
+    } else {
+      isMounted.current = true;
+    }
+  }, [time]);
+
+  const getTime = () => {
+    const time = Date.now() - date;
+
+    setTime(Math.floor((time / 1000) % 61));
+  };
 
   const isMatching = () => {
     let matching: boolean = true;
@@ -118,6 +141,8 @@ const Home: React.FC = () => {
     towers.forEach((tower) => tower.setBlocks([]));
     randomlyAssign(setFirstPattern, setSecondPattern, setThirdPattern);
     randomlyAssign(setFirstTower, setSecondTower, setThirdTower);
+    setTime(0);
+    setDate(Date.now());
   };
 
   // Whether the element with the index is positioning at the top of the column
@@ -210,7 +235,7 @@ const Home: React.FC = () => {
                 '
               >
                 <h2>Timer</h2>
-                <p>{countStep}</p>  
+                <p>{time}</p>  
               </div>
               <div className='border-2 border-neutral-300 rounded-lg bg-white w-full h-[80px]
                 flex flex-col py-2 justify-around items-center
