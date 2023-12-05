@@ -73,6 +73,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     if (isMounted.current) {
       if (time > 59) {
+        setIsCounting(false);
         setOver(true);
       }
     } else {
