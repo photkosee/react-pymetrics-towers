@@ -4,3 +4,8 @@
 ## Background
 Out of sheer curiosity about how drag-and-drop works, I started checking out some new libraries (I chose to use React Beautiful DnD) to amp up user experiences. This coincided with my plan to put together [my own Pymetrics Games site](https://github.com/photkosee/next-pymetrics-games). I had this idea of adding a drag-and-drop feature, especially in a tower game, to make the whole user experience more engaging and interactive.
 
+
+
+https://github.com/photkosee/react-pymetrics-towers/assets/114990364/6a3ff7ec-e281-4934-aec3-5066d22f2192
+
+
