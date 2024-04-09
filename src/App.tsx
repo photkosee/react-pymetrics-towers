@@ -1,25 +1,26 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
-import { Info } from "lucide-react";
+import { Github, Info } from "lucide-react";
 import { RotateCcw } from "lucide-react";
-import { 
+import {
   DragDropContext,
   Droppable,
   Draggable,
-  DropResult
-} from 'react-beautiful-dnd';
+  DropResult,
+} from "react-beautiful-dnd";
 
-import { Block, Tower } from './models/models';
-import HowToModal from './components/HowToModal';
-import WinModal from './components/WinModal';
-import OverModal from './components/OverModal';
+import { Block, Tower } from "./models/models";
+import HowToModal from "./components/HowToModal";
+import WinModal from "./components/WinModal";
+import OverModal from "./components/OverModal";
+import { Button } from "@nextui-org/react";
 
 const initialBlocks: Block[] = [
-  { id: 0, color: 'bg-gradient-to-r from-yellow-400 to-amber-500' },
-  { id: 1, color: 'bg-gradient-to-r from-lime-400 to-emerald-500' },
-  { id: 2, color: 'bg-gradient-to-r from-orange-500 to-red-600' },
-  { id: 3, color: 'bg-gradient-to-r from-cyan-400 to-blue-500' },
-  { id: 4, color: 'bg-gradient-to-r from-pink-500 to-rose-600' },
+  { id: 0, color: "bg-green-400" },
+  { id: 1, color: "bg-amber-500" },
+  { id: 2, color: "bg-red-500" },
+  { id: 3, color: "bg-blue-400" },
+  { id: 4, color: "bg-rose-300" },
 ];
 
 const Home: React.FC = () => {
@@ -183,18 +184,17 @@ const Home: React.FC = () => {
     const sourceTower = towers[sourceId];
     const draggingBlock = sourceTower.blocks[sourceTower.blocks.length - 1];
 
-    sourceTower.setBlocks(prevItems => [...prevItems.slice(0, -1)]);
-    towers[destId].setBlocks(prevItems => [...prevItems, draggingBlock]);
+    sourceTower.setBlocks((prevItems) => [...prevItems.slice(0, -1)]);
+    towers[destId].setBlocks((prevItems) => [...prevItems, draggingBlock]);
     setCountStep((prev) => prev + 1);
   };
 
   return (
-    <main className='bg-slate-800 h-full w-full'>
-      <div className='
-        min-h-screen flex flex-col w-full
-        justify-around items-center p-5
-        '
-      >
+    <main
+      className="flex flex-col gap-y-3 lg:gap-y-5 items-center justify-center
+      min-h-screen py-5 bg-neutral-900"
+    >
+      <div className="container flex flex-col gap-y-3 lg:gap-y-10 items-center">
         <HowToModal open={open} setOpen={setOpen} reset={reset} />
         <OverModal open={over} setOpen={setOver} reset={reset} />
         <WinModal
@@ -204,38 +204,73 @@ const Home: React.FC = () => {
           time={time}
           steps={countStep}
         />
-
-        <div className='flex flex-col items-center gap-7'>
-          <div className='flex justify-between gap-2'>
-            <div className='
-              max-w-[180px] border-2 border-neutral-300 rounded-lg px-3 md:px-5
-              pb-1 pt-3 bg-white
-              '
+        <div
+          className="flex flex-col lg:flex-row justify-center items-center
+          text-white gap-x-2 text-3xl font-semibold gap-y-3"
+        >
+          <div className="flex justify-center items-center text-white gap-x-2">
+            Pymetrics <p className="text-green-300">Towers</p> Game
+          </div>
+          <div className="flex justify-center items-center text-white gap-x-2">
+            <Button
+              isIconOnly
+              size="sm"
+              onClick={() => {
+                setOpen(true);
+                setIsCounting(false);
+              }}
             >
-              <div className='flex justify-center gap-1'>
+              <Info />
+            </Button>
+            <a href="https://github.com/photkosee" target="_blank">
+              <Button isIconOnly size="sm">
+                <Github />
+              </Button>
+            </a>
+            <Button isIconOnly size="sm" onClick={() => reset()}>
+              <RotateCcw />
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex flex-col lg:flex-row items-center gap-3 lg:gap-7">
+          <div className="flex lg:flex-col justify-between gap-2">
+            <div
+              className="
+              max-w-[180px] relative rounded-md px-3 md:px-5
+              pb-1 pt-3 bg-[#1f3540] lg:order-2
+              "
+            >
+              <div className="absolute top-0 left-2 text-lg text-white font-semibold">
+                Pattern
+              </div>
+              <div className="flex justify-center gap-1">
                 {[0, 1, 2].map((towerIndex) => (
-                  <div className='
+                  <div
+                    className="
                     w-8 md:w-12 h-full flex flex-col-reverse
                     justify-center items-center gap-[0.1rem]
-                    '
+                    "
                     key={towerIndex}
                   >
-                    {patterns[towerIndex].blocks
-                      .map((block) => (
-                        <div className={`
-                          w-8 h-8 md:w-12 md:h-10 rounded-lg md:rounded-xl
+                    {patterns[towerIndex].blocks.map((block) => (
+                      <div
+                        className={`
+                          w-8 h-8 md:w-12 md:h-10 rounded-md 
                           ${block.color}
                           `}
-                          key={block.id}
-                        />
-                      ))}
+                        key={block.id}
+                      />
+                    ))}
 
-                    {new Array(5 - patterns[towerIndex].blocks.length).fill(0)
+                    {new Array(5 - patterns[towerIndex].blocks.length)
+                      .fill(0)
                       .map((_, index) => (
-                        <div className='
-                          w-8 h-8 md:w-12 md:h-10 rounded-lg md:rounded-xl
+                        <div
+                          className="
+                          w-8 h-8 md:w-12 md:h-10 rounded-md 
                           border-2 invisible
-                          '
+                          "
                           key={index}
                         />
                       ))}
@@ -244,61 +279,50 @@ const Home: React.FC = () => {
               </div>
             </div>
 
-            <div className='w-[100px] h-full flex flex-col gap-2 self-end'>
-              <div className='flex gap-2 justify-center'>
-                <div className="rounded-full bg-slate-200 p-2"
-                  role="button"
-                  onClick={() => {
-                    setOpen(true);
-                    setIsCounting(false);
-                  }}
-                >
-                  <Info />
-                </div>
-
-                <div className="rounded-full bg-slate-200 p-2"
-                  role="button"
-                  onClick={() => reset()}
-                >
-                  <RotateCcw />
-                </div>
-              </div>
-
-              <div className='
-                border-2 border-neutral-300 rounded-lg bg-white w-full h-[80px]
+            <div
+              className="w-[100px] h-full flex flex-col lg:flex-row gap-2
+              self-end lg:self-center lg:w-full"
+            >
+              <div
+                className="
+                rounded-md bg-slate-200 w-full h-[80px]
                 flex flex-col py-2 justify-around items-center
-                '
+                "
               >
-                <h2 className='font-semibold'>Timer</h2>
-                <p>{time}</p>  
+                <h2 className="font-semibold">Timer</h2>
+                <p>{time}</p>
               </div>
-              <div className='
-                border-2 border-neutral-300 rounded-lg bg-white w-full h-[80px]
+              <div
+                className="
+                rounded-md bg-slate-200 w-full h-[80px]
                 flex flex-col py-2 justify-around items-center
-                '
+                "
               >
-                <h2 className='font-semibold'>Steps</h2>
+                <h2 className="font-semibold">Steps</h2>
                 <p>{countStep}</p>
               </div>
             </div>
           </div>
 
-          <div className='max-w-[320px] bg-white rounded-lg overflow-hidden pt-2 px-1 pb-1'>
+          <div className="max-w-[320px] bg-[#1f3540] rounded-md overflow-hidden pt-2 px-1 pb-1">
             <DragDropContext onDragEnd={onDragEnd}>
-              <div className='flex justify-center gap-2 md:gap-3 max-w-[320px]'>
+              <div className="flex justify-center gap-2 md:gap-3 max-w-[320px]">
                 {[0, 1, 2].map((towerIndex) => (
-                  <div className='
-                    w-16 md:w-24 h-full flex flex-col-reverse
+                  <div
+                    className="
+                    w-[71px] md:w-24 h-full flex flex-col-reverse
                     justify-center items-center gap-[0.1rem]
-                    '
+                    "
                     key={towerIndex}
                   >
-                    <div className='w-14 md:w-24 h-2 md:h-3 rounded-xl border-2 bg-neutral-100' />
+                    <div className="w-14 md:w-24 h-2 md:h-3 rounded-xl bg-[#2d4d5e]" />
 
                     {[0, 1, 2, 3, 4].map((rowIndex) => (
                       <Droppable
                         key={rowIndex}
-                        droppableId={towerIndex.toString() + rowIndex.toString()}
+                        droppableId={
+                          towerIndex.toString() + rowIndex.toString()
+                        }
                         direction="vertical"
                         isDropDisabled={!isDroppable(towerIndex, rowIndex)}
                       >
@@ -307,22 +331,26 @@ const Home: React.FC = () => {
                             key={rowIndex}
                             ref={provided.innerRef}
                             className={`
-                              w-10 h-9 md:w-16 md:h-14 flex justify-center items-center
-                              rounded-xl border-dashed
-                              ${snapshot.isDraggingOver &&
-                                'transform scale-110 border-4 border-slate-400/10bg-neutral-100'
+                              w-[43px] h-9 md:w-16 md:h-14 flex justify-center items-center
+                              rounded-md border-dashed
+                              ${
+                                snapshot.isDraggingOver &&
+                                "transform scale-105 border-3 border-[#2d4d5e]"
                               }
                             `}
                           >
-                            {towers[towerIndex].blocks
-                              .map((block, blockIndex) => {
+                            {towers[towerIndex].blocks.map(
+                              (block, blockIndex) => {
                                 if (blockIndex === rowIndex) {
                                   return (
                                     <Draggable
                                       key={block.id}
                                       draggableId={block.id.toString()}
                                       index={blockIndex}
-                                      isDragDisabled={isAtTop(blockIndex, towerIndex)}
+                                      isDragDisabled={isAtTop(
+                                        blockIndex,
+                                        towerIndex
+                                      )}
                                     >
                                       {(provided) => (
                                         <div
@@ -330,26 +358,31 @@ const Home: React.FC = () => {
                                           {...provided.draggableProps}
                                           {...provided.dragHandleProps}
                                           className={`
-                                            w-10 h-9 rounded-lg md:w-16 md:h-14 md:rounded-xl ${block.color}
-                                            ${isAtTop(blockIndex, towerIndex) ? '' :
-                                              'hover:scale-105 ease-in-out'
+                                            w-14 h-9 rounded-md md:w-16 md:h-14  ${
+                                              block.color
+                                            }
+                                            ${
+                                              isAtTop(blockIndex, towerIndex)
+                                                ? ""
+                                                : "hover:scale-105 ease-in-out"
                                             }
                                           `}
                                         />
                                       )}
                                     </Draggable>
-                                  )
+                                  );
                                 } else {
                                   return null;
                                 }
-                              })}
+                              }
+                            )}
                             {provided.placeholder}
                           </div>
                         )}
                       </Droppable>
-                      ))}
+                    ))}
                   </div>
-                  ))}
+                ))}
               </div>
             </DragDropContext>
           </div>

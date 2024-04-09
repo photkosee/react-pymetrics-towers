@@ -7,6 +7,10 @@
 A game to make the towers match the target formation. <a href="https://photkosee.github.io/react-pymetrics-towers/">Play now!</a>
 </p>
 
+### Log
+
+- 10/04/2024 New design
+
 ## Background
 
 Out of sheer curiosity about how drag-and-drop works, I started checking out some new libraries (I chose to use React Beautiful DnD) to amp up user experiences. This coincided with my plan to put together my own Pymetrics Games site. I had this idea of adding a drag-and-drop feature, especially in a tower game, to make the whole user experience more engaging and interactive.

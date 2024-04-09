@@ -15,15 +15,11 @@ interface HowToModalProps {
   reset: () => void;
 }
 
-const HowToModal: FC<HowToModalProps> = ({
-  open,
-  setOpen,
-  reset,
-}) => {
-
+const HowToModal: FC<HowToModalProps> = ({ open, setOpen, reset }) => {
   return (
     <>
-      <Modal isOpen={open}
+      <Modal
+        isOpen={open}
         onOpenChange={() => {
           setOpen(false);
           reset();
@@ -36,21 +32,23 @@ const HowToModal: FC<HowToModalProps> = ({
               How to play
             </ModalHeader>
             <ModalBody>
-              <p> 
-                Your goal is to match all the blocks at the bottom of the
-                screen with the pattern of the blocks at the top of the screen.
+              <p>
+                Your goal is to match all the blocks with the one from the
+                pattern screen.
               </p>
-              <p> 
-                To do this, simply drag and drop the blocks in the correct order.
-                Note that you can only move the top most block on each column.
+              <p>
+                To do this, simply drag and drop the blocks in the correct
+                order. Note that you can only move the top most block on each
+                column.
               </p>
-              <p> 
-                Try to do this as fast as you can while minimizing the number
-                of steps you move a block. Have fun!
+              <p>
+                Try to do this as fast as you can while minimizing the number of
+                steps you move a block. Have fun!
               </p>
             </ModalBody>
             <ModalFooter>
-              <Button color="primary"
+              <Button
+                color="primary"
                 onPress={() => {
                   setOpen(false);
                   reset();
@@ -64,6 +62,6 @@ const HowToModal: FC<HowToModalProps> = ({
       </Modal>
     </>
   );
-}
+};
 
 export default HowToModal;

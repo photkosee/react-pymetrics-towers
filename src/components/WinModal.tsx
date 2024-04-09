@@ -17,16 +17,11 @@ interface WinModalProps {
   reset: () => void;
 }
 
-const WinModal: FC<WinModalProps> = ({
-  open,
-  steps,
-  time,
-  setOpen,
-  reset,
-}) => {
+const WinModal: FC<WinModalProps> = ({ open, steps, time, setOpen, reset }) => {
   return (
     <>
-      <Modal isOpen={open}
+      <Modal
+        isOpen={open}
         onOpenChange={() => {
           setOpen(false);
           reset();
@@ -35,22 +30,21 @@ const WinModal: FC<WinModalProps> = ({
       >
         <ModalContent>
           <>
-            <ModalHeader className="flex flex-col gap-1">
-              You won!
-            </ModalHeader>
+            <ModalHeader className="flex flex-col gap-1">You won!</ModalHeader>
             <ModalBody>
-              <p> 
+              <p>
                 You spent {time} seconds with {steps} steps.
               </p>
             </ModalBody>
             <ModalFooter>
-              <Button color="primary"
+              <Button
+                color="primary"
                 onPress={() => {
                   setOpen(false);
                   reset();
                 }}
               >
-                Start
+                Restart
               </Button>
             </ModalFooter>
           </>
@@ -58,6 +52,6 @@ const WinModal: FC<WinModalProps> = ({
       </Modal>
     </>
   );
-}
+};
 
 export default WinModal;
