@@ -222,7 +222,11 @@ const Home: React.FC = () => {
             >
               <Info />
             </Button>
-            <a href="https://github.com/photkosee" target="_blank">
+            <a
+              href="https://github.com/photkosee"
+              target="_blank"
+              className="flex h-full items-center justify-center"
+            >
               <Button isIconOnly size="sm">
                 <Github />
               </Button>
