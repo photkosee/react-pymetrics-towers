@@ -21,4 +21,15 @@ I also have a blog post reflecting my journey on this project, check out the blo
 
 The Pymetrics games are a collection of 12 games designed to assess your personality traits and cognitive skills. The major challenge of the Pymetrics test is to understand what the desired outcome of each test is and what is being measured and scored.
 
+## Feature
+
+- A game matching all the blocks with the random pattern
+
 https://github.com/photkosee/react-pymetrics-towers/assets/114990364/6a3ff7ec-e281-4934-aec3-5066d22f2192
+
+## Built with
+
+- [Vite 5](https://vitejs.dev/) - Development environment
+- [React 18](https://react.dev/) - Development environment
+- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+- [Next UI](https://nextui.org/) - Components library for User Interface
