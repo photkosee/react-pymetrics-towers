@@ -223,7 +223,7 @@ const Home: React.FC = () => {
               <Info />
             </Button>
             <a
-              href="https://github.com/photkosee"
+              href="https://github.com/photkosee/react-pymetrics-towers"
               target="_blank"
               className="flex h-full items-center justify-center"
             >

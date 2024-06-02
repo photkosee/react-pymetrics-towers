@@ -25,11 +25,14 @@ The Pymetrics games are a collection of 12 games designed to assess your persona
 
 - A game matching all the blocks with the random pattern
 
-https://github.com/photkosee/react-pymetrics-towers/assets/114990364/6a3ff7ec-e281-4934-aec3-5066d22f2192
-
 ## Built with
 
 - [Vite 5](https://vitejs.dev/) - Development environment
 - [React 18](https://react.dev/) - Development environment
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
 - [Next UI](https://nextui.org/) - Components library for User Interface
+
+## Author
+Phot Koseekrainiramon
+- [LinkedIn](https://www.linkedin.com/in/phot-kosee/)
+- [GitHub](https://github.com/photkosee)
